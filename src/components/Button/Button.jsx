@@ -1,19 +1,16 @@
 import React from 'react';
-import { Styles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import Button from '@mui/material/Button';
 
 class GenericButton extends React.Component {
     render() {
+        const { onClick, variant, color, size } = this.props;
         return (
             <Button
-                onClick={this.props.onClick}
-                variant={this.props.variant}
-                color={this.props.color}
-                size={this.props.size}
-                style={{ marginLeft: '5px', marginBottom: '3px', height: '35px' }}
+                onClick={onClick}
+                variant={variant}
+                color={color}
+                size={size}
+                style={{ marginLeft: '5px', marginBottom: '3px', height: '30px' }}
             >
                 {this.props.title}
             </Button>

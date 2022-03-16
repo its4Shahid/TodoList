@@ -1,9 +1,9 @@
 import React from 'react';
-import Button from '../../components/Button';
-import TextField from '../../components/TextBox';
-import List from '../../components/List';
-import { ContactSupportTwoTone, UsbOutlined } from '@material-ui/icons';
+import TodoInput from '../TodoInput';
 import axios from 'axios';
+import TodoHeader from '../TodoHeader';
+import TodoItem from '../TodoItems';
+import TodoFooter from '../TodoFooter';
 
 class TodoList extends React.Component {
     constructor(props) {
@@ -20,17 +20,18 @@ class TodoList extends React.Component {
         this.addHandler = this.addHandler.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
         this.clearHandler = this.clearHandler.bind(this);
-        this.displayHandler = this.displayHandler.bind(this);
         this.updateTask = this.updateTask.bind(this);
     }
     componentDidMount() {
-        fetch('https://jsonplaceholder.typicode.com/posts/')
-            .then((response) => response.json())
-            .then((json) =>
+        axios
+            .get('https://jsonplaceholder.typicode.com/posts/')
+            // .then((response) => response.json())
+            .then((response) => {
+                const result = response.data;
                 this.setState({
-                    items: [...json].slice(0, 10),
-                }),
-            );
+                    items: result.slice(0, 10),
+                });
+            });
     }
 
     changeHandler(event) {
@@ -39,23 +40,13 @@ class TodoList extends React.Component {
 
     addHandler(event) {
         event.preventDefault();
-        const { items, value, duplicateItems, id, btntitle } = this.state;
+        const { items, value, id, btntitle } = this.state;
         if (btntitle === 'Update') {
-            // const result = (items) => items.id === id;
-            // const index = data.findIndex(result);
-            // items.splice(index, 1, { id: id, title: value, body: 'body', userId: value });
-            // console.log(...items);
-            // this.setState({
-            //     id: '',
-            //     value: '',
-            //     items: [...items, value],
-            //     btntitle: 'ADD',
-            // });
             if (value !== null && value !== '') {
                 fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
                     method: 'PUT',
                     body: JSON.stringify({
-                        id: id,
+                        id,
                         title: value,
                         body: 'bar',
                         userId: 1,
@@ -65,22 +56,26 @@ class TodoList extends React.Component {
                     },
                 })
                     .then((response) => response.json())
-                    .then((response) =>
+                    .then((response) => {
+                        const result = (items) => items.id === id;
+                        const index = items.findIndex(result);
+                        items.splice(index, 1, response);
                         this.setState({
-                            items: [...items, response],
-                            duplicateItems: [...items, response],
+                            items: [...items],
                             value: '',
-                        }),
-                    );
+                            btntitle: 'ADD',
+                        });
+                    });
             }
         } else {
             if (value !== null && value !== '') {
                 fetch('https://jsonplaceholder.typicode.com/posts', {
                     method: 'POST',
                     body: JSON.stringify({
-                        title: 'foo',
+                        title: value,
                         body: 'bar',
                         userId: 1,
+                        id: Math.random(),
                     }),
                     headers: {
                         'Content-type': 'application/json; charset=UTF-8',
@@ -107,31 +102,22 @@ class TodoList extends React.Component {
         });
     }
     clearHandler() {
-        const { items } = this.state;
-        let clearitem = [...items];
-        clearitem.splice(0, clearitem.length);
         this.setState({
-            items: clearitem,
+            items: [],
         });
     }
-    displayHandler() {
-        const { items, duplicateItems } = this.state;
-        let clearitem = [...items];
-        clearitem.splice(0, clearitem.length);
-        this.setState({
-            items: [...duplicateItems],
-        });
-    }
+
     updateTask(listid) {
-        const { items, selectedItem } = this.state;
-        const deleteItem = items.filter((item) => item.id !== listid);
-        const selectedItems = items.filter((item) => item.id === listid);
+        const { items } = this.state;
+        const selectedItems = items.find((item) => item.id === listid);
+
         this.setState({
             id: listid,
-            value: selectedItems[0].title,
+            value: selectedItems.title,
             btntitle: 'Update',
         });
     }
+
     render() {
         const { items, value, btntitle } = this.state;
 
@@ -139,66 +125,23 @@ class TodoList extends React.Component {
             <div className="main-div">
                 <div className="main-child">
                     <div className="heading">
-                        <h1 style={{ color: 'black ' }}>Todo List</h1>
+                        <TodoHeader headerTitle="Todo List" />
                     </div>
                     <div className="control-div">
-                        <TextField val={value} onChange={this.changeHandler} />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="medium"
-                            title={btntitle}
-                            onClick={this.addHandler}
-                            className="btnAdd"
-                            style="marginLeft:'5px'"
+                        <TodoInput
+                            InputVal={value}
+                            inputChangeHandler={this.changeHandler}
+                            buttonTitle={btntitle}
+                            onClickHandler={this.addHandler}
                         />
                     </div>
                     <div className="list">
-                        <List deleteTask={this.deleteTask} updateTask={this.updateTask} items={items} />
+                        <TodoItem deleteItem={this.deleteTask} updateItem={this.updateTask} todoItems={items} />
                     </div>
                     <div className="todoFooter">
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            title="Clear List"
-                            onClick={this.clearHandler}
-                        />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            className="btnDisplay"
-                            title="Display All"
-                            onClick={this.displayHandler}
-                        />
+                        <TodoFooter todoClearHandler={this.clearHandler} />
                     </div>
                 </div>
-                {/* <div className="mainChild"></div>
-                
-                  
-                    
-
-
-                </div>
-            
-                <div className="todoFooter">
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        title="Clear List"
-                        onClick={this.clearHandler}
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        className="btnDisplay"
-                        title="Display All"
-                        onClick={this.displayHandler}
-                    />
-                </div> */}
             </div>
         );
     }
