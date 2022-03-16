@@ -1,10 +1,10 @@
-import React from "react";
-import TodoList from "./views/TodoList";
+import React from 'react';
+import TodoList from './views/TodoList';
 
 class App extends React.Component {
-  render() {
-    return <TodoList />;
-  }
+    render() {
+        return <TodoList />;
+    }
 }
 
 export default App;
