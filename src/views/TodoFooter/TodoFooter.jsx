@@ -1,17 +1,8 @@
 import React from 'react';
 import Button from '../../components/Button';
 
-class TodoFooter extends React.Component {
-    render() {
-        return (
-            <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                title="Clear List"
-                onClick={this.todoClearHandler}
-            />
-        );
-    }
+function TodoFooter(props) {
+    const { todoClearHandler } = props;
+    return <Button variant="contained" color="primary" size="small" title="Clear List" onClick={todoClearHandler} />;
 }
 export default TodoFooter;
