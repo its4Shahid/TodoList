@@ -1,12 +1,18 @@
-import React from "react";
-import TextField from "@material-ui/core/TextField";
+import React from 'react';
+import TextField from '@mui/material/TextField';
 
-class GenericTextBox extends React.Component {
-  render() {
+function GenericTextBox(props) {
+    const { textValue, onChange, placeholder } = props;
     return (
-      <TextField id="standard-basic" onChange={this.props.onChange}/>
-          );
-  }
+        <TextField
+            variant="standard"
+            id="standard-basic"
+            value={textValue}
+            onChange={onChange}
+            placeholder={placeholder}
+            style={{ marginLeft: '5px', width: '80%', height: '50%' }}
+        />
+    );
 }
 
 export default GenericTextBox;
