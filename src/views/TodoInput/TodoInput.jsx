@@ -1,16 +1,17 @@
 import React from 'react';
 import TextField from '../../components/TextBox';
 import Button from '../../components/Button';
+import { Grid } from '@mui/material';
 
 function TodoInput(props) {
     const { InputVal, inputChangeHandler, buttonTitle, onClickHandler } = props;
     console.log(InputVal);
     return (
-        <>
-            <div>
+        <Grid container rowSpacing={1}>
+            <Grid item xs={12}>
                 <TextField textValue={InputVal} onChange={inputChangeHandler} placeholder="Enter Item" />
-            </div>
-            <div>
+            </Grid>
+            <Grid item xs={12}>
                 <Button
                     variant="contained"
                     color="primary"
@@ -18,10 +19,9 @@ function TodoInput(props) {
                     title={InputVal === '' ? 'ADD' : buttonTitle}
                     onClick={onClickHandler}
                     className="btnAdd"
-                    style="marginLeft:'5px'"
                 />
-            </div>
-        </>
+            </Grid>
+        </Grid>
     );
 }
 export default TodoInput;

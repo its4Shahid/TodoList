@@ -5,12 +5,12 @@ function GenericTextBox(props) {
     const { textValue, onChange, placeholder } = props;
     return (
         <TextField
+            fullWidth
             variant="standard"
             id="standard-basic"
             value={textValue}
             onChange={onChange}
             placeholder={placeholder}
-            style={{ marginLeft: '5px', width: '80%', height: '50%' }}
         />
     );
 }
