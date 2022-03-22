@@ -6,18 +6,25 @@ import TodoHeader from '../TodoHeader';
 import TodoItem from '../TodoItems';
 import TodoFooter from '../TodoFooter';
 import PageLoader from '../../components/PageLoader';
-import { getAllTodos, addTodosItem, updateTodosItem, deleteTodosItem, clearTodos } from '../../store/actions';
+import {
+    clearTodos,
+    addItemsRequest,
+    setItemsRequest,
+    updateItemsRequest,
+    deleteItemRequest,
+    clearItemRequest,
+} from '../../store/actions';
 import { Grid } from '@mui/material';
 
 function TodoList() {
-    const { items: itemsList, isLoading } = useSelector((state) => state.TodoListItems);
+    const { items, isLoading } = useSelector((state) => state.TodoListItems);
     const dispatch = useDispatch();
     const [value, setValue] = useState('');
     const [btntitle, setbtnTitle] = useState('ADD');
     const [id, setId] = useState('');
 
     useEffect(() => {
-        dispatch(getAllTodos());
+        dispatch(setItemsRequest());
     }, []);
 
     const changeHandler = (event) => {
@@ -27,7 +34,7 @@ function TodoList() {
     const updatehandler = async (event) => {
         if (value !== null && value !== '') {
             try {
-                dispatch(updateTodosItem(value, 'body', id, id));
+                dispatch(updateItemsRequest(value, 'body', id, id));
                 setValue('');
                 setbtnTitle('ADD');
             } catch (error) {
@@ -38,7 +45,7 @@ function TodoList() {
     const addHandler = async (event) => {
         if (value !== null && value !== '') {
             try {
-                dispatch(addTodosItem(value, 'body', 1, uuidv4()));
+                dispatch(addItemsRequest(value, 'body', 1, uuidv4()));
                 setValue('');
             } catch (e) {
                 console.log('Error:', e);
@@ -46,14 +53,14 @@ function TodoList() {
         }
     };
     const deleteTask = async (index) => {
-        dispatch(deleteTodosItem(index));
+        dispatch(deleteItemRequest(index));
     };
     const clearHandler = () => {
-        dispatch(clearTodos([]));
+        dispatch(clearItemRequest([]));
     };
 
     const updateTask = (listid) => {
-        const selectedItems = itemsList.find((item) => item.id === listid);
+        const selectedItems = items.find((item) => item.id === listid);
         setValue(selectedItems.title);
         setbtnTitle('Update');
         setId(listid);
@@ -75,7 +82,7 @@ function TodoList() {
                 </Grid>
                 <Grid item xs={11}>
                     {isLoading && <PageLoader />}
-                    <TodoItem deleteItem={deleteTask} updateItem={updateTask} todoItems={itemsList} />
+                    <TodoItem deleteItem={deleteTask} updateItem={updateTask} todoItems={items} />
                 </Grid>
                 <Grid item xs={11}>
                     <TodoFooter todoClearHandler={clearHandler} />

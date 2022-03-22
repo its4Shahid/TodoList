@@ -11,7 +11,7 @@ const GenericList = (props) => {
     return (
         <List>
             {items.map((item, index) => (
-                <ListItem key={item.id} value={item.name}>
+                <ListItem key={item.id}>
                     {item.title}
                     <ListItemSecondaryAction>
                         <IconButton onClick={() => deleteTask(item.id)} edge="end" aria-label="delete">

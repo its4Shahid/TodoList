@@ -1,29 +1,68 @@
-import { getTodos, deleteTodos, addTodos, updateTodos } from '../../store/services/TodoService';
-export const getItems = (items) => {
+import { getTodos, deleteTodos, addTodos, updateTodos } from '../services/todoService';
+
+export const SET_HANDLER_REQUEST = 'GET_HANDLER';
+export const SET_HANDLER_SUCCESS = 'SET_HANDLER';
+export const ADD_HANDLER_REQUEST = 'ADD_HANDLER_REQUEST';
+export const ADD_HANDLER_SUCCESS = 'ADD_HANDLER_SUCCESS';
+export const UPDATE_HANDLER_REQUEST = 'UPDATE_HANDLER_REQUEST';
+export const UPDATE_HANDLER_SUCCESS = 'UPDATE_HANDLER_SUCCESS';
+export const DELETE_HANDLER_REQUEST = 'DELETE_HANDLER_REQUEST';
+export const DELETE_HANDLER_SUCCESS = 'DELETE_HANDLER_SUCCESS';
+export const CLEAR_HANDLER_REQUEST = 'CLEAR_HANDLER_REQUEST';
+export const CLEAR_HANDLER_SUCCESS = 'CLEAR_HANDLER_SUCCESS';
+
+export const setItemsRequest = () => {
     return {
-        type: 'GET_HANDLER',
+        type: SET_HANDLER_REQUEST,
+    };
+};
+export const setItemsSuccess = (items) => {
+    return {
+        type: SET_HANDLER_SUCCESS,
         payload: items,
     };
 };
-export const addItems = (items) => {
+export const addItemsRequest = (title, body, userId, id) => {
     return {
-        type: 'ADD_HANDLER',
-        payload: items,
+        type: ADD_HANDLER_REQUEST,
+        payload: { title, body, userId, id },
     };
 };
-export const updateItems = (items) => {
+export const addItemsSuccess = () => {
     return {
-        type: 'UPDATE_HANDLER',
-        payload: items,
+        type: ADD_HANDLER_SUCCESS,
     };
 };
-export const deleteItem = (id) => {
+
+export const updateItemsRequest = (title, body, userId, id) => {
     return {
-        type: 'DELETE_HANDLER',
+        type: UPDATE_HANDLER_REQUEST,
+        payload: { title, body, userId, id },
+    };
+};
+export const updateItemsSuccess = () => {
+    return {
+        type: UPDATE_HANDLER_SUCCESS,
+    };
+};
+export const deleteItemRequest = (id) => {
+    return {
+        type: DELETE_HANDLER_REQUEST,
         payload: id,
     };
 };
-export const clearItem = () => {
+export const deleteItemSuccess = () => {
+    return {
+        type: DELETE_HANDLER_SUCCESS,
+    };
+};
+export const clearItemRequest = () => {
+    return {
+        type: 'CLEAR_HANDLER',
+        payload: [],
+    };
+};
+export const clearItemSuccess = () => {
     return {
         type: 'CLEAR_HANDLER',
         payload: [],
@@ -34,55 +73,4 @@ const setLoading = (payload) => {
         type: 'SET_LOADING',
         payload,
     };
-};
-
-export const getAllTodos = () => async (dispatch) => {
-    try {
-        dispatch(setLoading(true));
-        const { todos } = await getTodos();
-        dispatch(getItems(todos.splice(0, 10)));
-    } catch (error) {
-        console.log('error', error);
-    }
-    dispatch(setLoading(false));
-};
-export const addTodosItem = (title, body, userId, id) => async (dispatch) => {
-    try {
-        dispatch(setLoading(true));
-        const { todos } = await addTodos(title, body, userId, id);
-        dispatch(addItems(todos));
-    } catch (error) {
-        console.log('Error:', error);
-    }
-
-    dispatch(setLoading(false));
-};
-export const updateTodosItem = (title, body, userId, id) => async (dispatch) => {
-    try {
-        dispatch(setLoading(true));
-        const { todos } = await updateTodos(title, body, userId, id);
-        dispatch(updateItems(todos));
-    } catch (error) {
-        console.log('Error:', error);
-    }
-    dispatch(setLoading(false));
-};
-export const deleteTodosItem = (id) => async (dispatch) => {
-    try {
-        dispatch(setLoading(true));
-        const { todos } = await deleteTodos(id);
-        dispatch(deleteItem(todos));
-    } catch (error) {
-        console.log('Error:', error);
-    }
-    dispatch(setLoading(false));
-};
-export const clearTodos = (empty) => async (dispatch) => {
-    try {
-        dispatch(setLoading(true));
-        dispatch(clearItem(empty));
-    } catch (error) {
-        console.log('Error:', error);
-    }
-    dispatch(setLoading(false));
 };
