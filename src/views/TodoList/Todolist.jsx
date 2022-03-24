@@ -1,111 +1,95 @@
-import React from "react";
-import Button from "../../components/Button";
-import TextField from "../../components/TextBox";
-import List from "../../components/List";
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import TodoInput from '../TodoInput';
+import TodoHeader from '../TodoHeader';
+import TodoItem from '../TodoItems';
+import TodoFooter from '../TodoFooter';
+import PageLoader from '../../components/PageLoader';
+import {
+    clearTodos,
+    addItemsRequest,
+    setItemsRequest,
+    updateItemsRequest,
+    deleteItemRequest,
+    clearItemRequest,
+} from '../../store/actions';
+import { Grid } from '@mui/material';
 
-class TodoList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: "",
-      items: [],
-      duplicateItems: [],
+function TodoList() {
+    const { items, isLoading } = useSelector((state) => state.TodoListItems);
+    const dispatch = useDispatch();
+    const [value, setValue] = useState('');
+    const [btntitle, setbtnTitle] = useState('ADD');
+    const [id, setId] = useState('');
+
+    useEffect(() => {
+        dispatch(setItemsRequest());
+    }, []);
+
+    const changeHandler = (event) => {
+        setValue(event.target.value);
     };
-    this.changeHandler = this.changeHandler.bind(this);
-    this.addHandler = this.addHandler.bind(this);
-    this.deleteTask = this.deleteTask.bind(this);
-    this.clearHandler = this.clearHandler.bind(this);
-    this.displayHandler = this.displayHandler.bind(this);
-  }
 
-  //Change it to bind
-  changeHandler(event) {
-    this.setState({ value: event.target.value });
-  }
+    const updatehandler = async (event) => {
+        if (value !== null && value !== '') {
+            try {
+                dispatch(updateItemsRequest(value, 'body', id, id));
+                setValue('');
+                setbtnTitle('ADD');
+            } catch (error) {
+                console.log('Error:', error);
+            }
+        }
+    };
+    const addHandler = async (event) => {
+        if (value !== null && value !== '') {
+            try {
+                dispatch(addItemsRequest(value, 'body', 1, uuidv4()));
+                setValue('');
+            } catch (e) {
+                console.log('Error:', e);
+            }
+        }
+    };
+    const deleteTask = async (index) => {
+        dispatch(deleteItemRequest(index));
+    };
+    const clearHandler = () => {
+        dispatch(clearItemRequest([]));
+    };
 
-  addHandler(event) {
-    event.preventDefault();
-    const { items, value, duplicateItems } = this.state;
-    if(value!=null && value!='')
-    {
-    this.setState({
-      value: '',
-      items: [...items, value],
-      duplicateItems: [...duplicateItems, value],
-    });
-    }
-    else{
-      alert("Empty")
-    }
-    value='';
-  }
-  deleteTask(index) {
-    const { items } = this.state;
-    const deleteItem = [...items];
-    deleteItem.splice(index, 1);
-    this.setState({
-      items: deleteItem,
-    });
-  }
-  clearHandler() {
-    const { items } = this.state;
-    let clearitem = [...items];
-    clearitem.splice(0, clearitem.length);
-    this.setState({
-      items: clearitem,
-    });
-  }
-  displayHandler() {
-    const { items, duplicateItems } = this.state;
-    let clearitem = [...items];
-    clearitem.splice(0, clearitem.length);
-    this.setState({
-      items: [...duplicateItems],
-    });
-  }
-
-  render() {
-    const { items, value } = this.state;
-    const {} = this.props;
+    const updateTask = (listid) => {
+        const selectedItems = items.find((item) => item.id === listid);
+        setValue(selectedItems.title);
+        setbtnTitle('Update');
+        setId(listid);
+    };
 
     return (
-      <div className="main-div">
-        <div className="mainChild"></div>
-        <div className="todoHeader">
-          <h1>Todo List</h1>
-          <TextField value={value} onChange={this.changeHandler} />
-
-          <Button
-            variant="contained"
-            color="default"
-            size="medium"
-            title="Add"
-            onClick={this.addHandler}
-          />
+        <div className="main-div">
+            <Grid container justifyContent="center" rowSpacing={1}>
+                <Grid item xs={12}>
+                    <TodoHeader headerTitle="Todo List" />
+                </Grid>
+                <Grid item xs={11}>
+                    <TodoInput
+                        InputVal={value}
+                        inputChangeHandler={changeHandler}
+                        buttonTitle={btntitle}
+                        onClickHandler={btntitle === 'ADD' ? addHandler : updatehandler}
+                    />
+                </Grid>
+                <Grid item xs={11}>
+                    {isLoading && <PageLoader />}
+                    <TodoItem deleteItem={deleteTask} updateItem={updateTask} todoItems={items} />
+                </Grid>
+                <Grid item xs={11}>
+                    <TodoFooter todoClearHandler={clearHandler} />
+                </Grid>
+            </Grid>
         </div>
-        <div className="list">
-          <List deleteTask={this.deleteTask} items={items} />
-        </div>
-        <div className="todoFooter">
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            title="Clear List"
-            onClick={this.clearHandler}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            className="btnDisplay"
-            title="Display All"
-            onClick={this.displayHandler}
-          />
-        </div>
-      </div>
     );
-  }
 }
 
 export default TodoList;
